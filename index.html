@@ -30,8 +30,12 @@
       </p>
     </div>
 
+    <div v-show="!displayEmojiWarning" class="flex justify-center my-4">
+      <input type="text" v-model.trim="filterText" placeholder="Type to search..." class="rounded px-2 py-3 bg-grey-lighter text-center">
+    </div>
+
     <ul class="list-reset flex flex-wrap justify-center">
-      <li v-for="(emojiLink, emojiText) in emojis" class="p-2 border rounded m-3 shadow-lg w-32 h-32 flex flex-col items-center justify-center">
+      <li v-for="(emojiLink, emojiText) in filteredEmojis" class="p-2 border rounded m-3 shadow-lg w-32 h-32 flex flex-col items-center justify-center">
         <div class="flex flex-no-grow items-center justify-center pb-4 border-b-2 border-grey-light">
           <img class="h-12" :src="emojiLink" alt="">
         </div>
@@ -46,6 +50,7 @@
     new Vue({
       el: "#root",
       data: {
+        filterText: "",
         displayEmojiWarning: true,
         emojis: {}
       },
@@ -55,6 +60,16 @@
           fetch("https://api.github.com/emojis")
             .then(res => res.json())
             .then(obj => this.emojis = obj)
+        }
+      },
+      computed: {
+        filteredEmojis() {
+          const v = {}
+          for (let k in this.emojis) {
+            if (k.includes(this.filterText))
+              v[k] = this.emojis[k];
+          }
+          return v;
         }
       }
     })
